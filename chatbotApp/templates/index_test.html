@@ -13,12 +13,14 @@
     <form>
         <div id="chatbox">
             <div class="col-md-8 ml-auto mr-auto">
-                <p class="botText"><span>안녕하세요! 의사소통 챗봇입니다.</span></p>
+                <p class="botText"><span>안녕하세요! 증상 기반 반려견 질환 진단 챗봇 <의사소통>입니다.</span></p>
+                <p class="botText"><span>다음 안내에 따라 반려견에 대한 사전 정보를 입력해주세요.</span></p>
+                <p class="botText"><span>시작하시려면, 'start' 를 입력해주세요. </span></p>
             </div>
         </div>
         <div id="userInput" class="row">
             <div class="col-md-10">
-                <input id="text" type="text" name="breed" placeholder="Message" class="form-control">
+                <input id="text" type="text" name="msg" placeholder="Message" class="form-control">
                 <button type="submit" id="send" class="btn btn-warning">Send</button>
             </div>
         </div>
@@ -42,7 +44,7 @@
                     breed: rawText,
                 },
                 type: "POST",
-                url: "/get",
+                url: "/breed",
             }).done(function(data) {
                 var botHtml = '<p class="botText"><span>' + data + "</span></p>";
                 $("#chatbox").append($.parseHTML(botHtml));
@@ -51,6 +53,21 @@
                     behavior: "smooth",
                 });
             });
+            $.ajax({
+                data: {
+                    age: rawText,
+                },
+                type: "POST",
+                url: "/age",
+            }).done(function(data) {
+                var botHtml = '<p class="botText"><span>' + data + "</span></p>";
+                $("#chatbox").append($.parseHTML(botHtml));
+                document.getElementById("userInput").scrollIntoView({
+                    block: "start",
+                    behavior: "smooth",
+                });
+            });
+            
             event.preventDefault();
         });
     });
