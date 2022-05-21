@@ -64,7 +64,7 @@ def input_breed():
         breed = flask.request.form["breed"]
         
         if breed == 'start':
-            response = "반려견의 종은 무엇인가요? (ex. 말티즈, 보더콜리 등)\n종을 모를 경우, '종 모름'을 입력해주세요"
+            response = "반려견의 종은 무엇인가요? (ex. 말티즈, 보더콜리 등) <br> 종을 모를 경우, '종 모름'을 입력해주세요"
         else: 
             response, breed = processor.check_breed(str(breed))
 
@@ -74,7 +74,7 @@ def input_breed():
 def input_age():
     age = flask.request.form["age"]
     if age == '나이 입력': 
-        response = "반려견의 나이는 몇 살인가요? (숫자만 입력해주세요) 나이를 모를 경우, '나이 모름'을 입력해주세요."
+        response = "반려견의 나이는 몇 살인가요? (숫자만 입력해주세요) <br> 나이를 모를 경우, '나이 모름'을 입력해주세요."
     else: 
         response, age = processor.check_age(int(age))
 
