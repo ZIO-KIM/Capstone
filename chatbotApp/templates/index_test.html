@@ -41,24 +41,10 @@
             });
             $.ajax({
                 data: {
-                    breed: rawText,
+                    answer: rawText,
                 },
                 type: "POST",
-                url: "/breed",
-            }).done(function(data) {
-                var botHtml = '<p class="botText"><span>' + data + "</span></p>";
-                $("#chatbox").append($.parseHTML(botHtml));
-                document.getElementById("userInput").scrollIntoView({
-                    block: "start",
-                    behavior: "smooth",
-                });
-            });
-            $.ajax({
-                data: {
-                    age: rawText,
-                },
-                type: "POST",
-                url: "/age",
+                url: "/answer",
             }).done(function(data) {
                 var botHtml = '<p class="botText"><span>' + data + "</span></p>";
                 $("#chatbox").append($.parseHTML(botHtml));

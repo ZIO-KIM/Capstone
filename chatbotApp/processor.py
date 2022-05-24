@@ -22,8 +22,9 @@ with open('data/지식인_증상_유사단어_dictionary_Pororo.json','r') as f:
 # define sts
 sts = Pororo(task="semantic_textual_similarity", lang="ko")
 
-# def pororo_check(symptoms):
-      # symptoms =  
+# def pororo_check():
+#       symptoms = sts("구토", "기침")
+#       return symptoms
   
 # input - 1. breed
 def check_breed(breed):   

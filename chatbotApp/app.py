@@ -5,7 +5,7 @@ from pycaret.classification import *
 from pororo import Pororo
 import json
 from flask_pymongo import PyMongo
-from dooly import Dooly
+# from dooly import Dooly
 import sys
 
 sys.setrecursionlimit(50000)
@@ -54,7 +54,7 @@ def input():
         answer = flask.request.form["answer"]
         
         if answer == 'start':
-            # response = str(sts("구토", "배 통증"))
+            # response = processor.pororo_check()
             response = "반려견의 종은 무엇인가요? 다음 중 해당하는 종을 입력해주세요. <br>  (말티즈, 푸들, 포메라니안, 시추, 비숑프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스훈트, 진도견, 웰시코기, 시바견, 코커스패니얼, 믹스)"
 
         elif answer in breed_list: 
