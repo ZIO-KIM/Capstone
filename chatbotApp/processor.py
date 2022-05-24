@@ -22,7 +22,9 @@ with open('data/지식인_증상_유사단어_dictionary_Pororo.json','r') as f:
 # define sts
 sts = Pororo(task="semantic_textual_similarity", lang="ko")
 
-
+# def pororo_check(symptoms):
+      # symptoms =  
+  
 # input - 1. breed
 def check_breed(breed):   
 
@@ -104,7 +106,6 @@ def check_sex(sex):
 
 # input - 4. symptoms
 def check_symptoms(symptoms):
-  print("반려견이 보이는 증상을 단어 혹은 문장으로 입력해주세요.")
 
   if symptoms in sample_symptoms_dict:  # 증상 dictionary key에 입력된 증상이 있을 경우
     print("의사소통 데이터베이스의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.")
@@ -150,14 +151,9 @@ def check_symptoms(symptoms):
 
   return symptoms
 
-def predict(breed, age, sex, symptoms): 
-  breed_checked = check_breed(breed)
-  age_checked = check_age(age)
-  sex_checked = check_sex(sex)
-  symptom_checked = check_symptoms(symptoms)
-
-  X =  {'Breed' : [breed_checked], 'Age'	: [int(age_checked)], 'Sex' : [sex_checked], 'Symptoms' : [symptom_checked]  }
-  X = pd.DataFrame(X)
+def predict(conv_data): 
+  X =  {'Breed' : conv_data['breed'], 'Age'	: conv_data['age'], 'Sex' : conv_data['sex'], 'Symptoms' : conv_data['symptoms'] }
+  X = pd.DataFrame([X])
 
   y_pred = predict_model(model, X)
   prediction = y_pred['Label'][0]
