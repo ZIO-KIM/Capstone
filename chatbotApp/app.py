@@ -138,7 +138,7 @@ def symptom_input():
             predicted_disease = processor.predict(conv_data)
             output_specified = str(output.loc[output['ICD']==predicted_disease,'질병명'].dropna().unique().tolist())
             response = "검사 결과, 예상되는 질병은 {} 입니다. <br>  이 카테고리에 해당되는 질병에는 {} 가 있습니다.".format(predicted_disease, output_specified)
-            return jsonify({'index': 'true', 'response': response, 'ICD': predicted_disease})
+            return jsonify({'index': 'true', 'response': response, 'ICD': predicted_disease, 'list': output_specified})
         
         elif symptom in filter_list: # 필터링 데이터에 있는 입력과 바로 일치할 경우
             tmp = filter.loc[filter['입력']==symptom,:]
@@ -161,7 +161,7 @@ def symptom_input():
                 vector2 = sts.encode(elem)
                 sim = util.cos_sim(vector1, vector2)
                 sim = sim.item()
-                if sim >= 0.3: # 유사도 0.3 이상이면 append
+                if sim >= 0.5: # 유사도 0.3 이상이면 append
                     sim_symp.append(elem)
 
             if sim_symp: 
@@ -182,9 +182,9 @@ def ICD_specify_print():
         print(disease_name)
 
         tmp = output.loc[output['질병명']==disease_name,:]
-        describe_disease = filter.loc[tmp.index[0],"설명"]
+        describe_disease = output.loc[tmp.index[0],"설명"]
 
-        return jsonify(describe_disease)
+        return describe_disease
         
 if __name__ == '__main__':
     app.run(debug=True)

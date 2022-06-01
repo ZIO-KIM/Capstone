@@ -258,6 +258,15 @@
         })
     }
 
+    catch_disease_name = function () {
+                            return botui.action.text({
+                            delay: 500,
+                            action: {
+                            placeholder: '질병명 입력'
+                            }, 
+                          })
+                         }
+
 
     symptomService = function() { // symptom 입력 & check process
         botui.message
@@ -280,21 +289,17 @@
             if (response['index'] == 'true') { // DB에 있는 증상이랑 일치한 증상이 들어왔을 때
                 botui.message.bot({delay: 500, content: response['response']})
                 botui.message.bot({delay: 1000, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
-                .then(function () {
-                    return botui.action.text({
-                    delay: 500,
-                    action: {
-                        placeholder: '질병명 입력'
-                    }, 
-                })
-                }) // 재입력 받기
+                .then(
+                    catch_disease_name()
+                ) // 재입력 받기
                 .then(function(res) {
                     if (res.value == '없음') {
                         botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
                     }
                     else {
-                        ICD_specify = callAjax(response['ICD'],'/ICD_specify') // 자세한 설명 출력
+                        ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
                         botui.message.bot({delay: 500, content: ICD_specify})
+                        catch_disease_name()
                     }
                 })
 
@@ -337,7 +342,7 @@
                                 botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
                             }
                             else {
-                                ICD_specify = callAjax(response['ICD'],'/ICD_specify') // 자세한 설명 출력
+                                ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
                                 botui.message.bot({delay: 500, content: ICD_specify})
                             }
                         })

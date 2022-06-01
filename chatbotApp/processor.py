@@ -2,7 +2,6 @@ import flask
 import pickle
 import pandas as pd
 from pycaret.classification import *
-from pororo import Pororo
 import json
 
 pipeline_path = 'model/model_pipeline_remove4'
@@ -19,12 +18,7 @@ symp_list = data['Symptoms'].unique().tolist()
 # 증상 dictionary json load
 with open('data/지식인_증상_유사단어_dictionary_Pororo.json','r') as f:
     sample_symptoms_dict = json.load(f)
-# define sts
-sts = Pororo(task="semantic_textual_similarity", lang="ko")
 
-def pororo_check():
-      symptoms = sts("구토", "기침")
-      return symptoms
 
 def predict(conv_data): 
   X =  {'Breed' : conv_data['breed'], 'Age'	: conv_data['age'], 'Sex' : conv_data['sex'], 'Symptoms' : conv_data['symptoms'] }
