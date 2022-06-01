@@ -186,6 +186,36 @@ def ICD_specify_print():
         describe_disease = output.loc[tmp.index[0],"설명"]
 
         return describe_disease
+
+@app.route("/check_if_disease_isin", methods=['GET', 'POST'])
+def check_if_disease_isin():
+    if flask.request.method == 'GET':
+        return(flask.render_template('index_test.html')) # main.html & index_test.html 혼용
+    if flask.request.method == 'POST':
+        answer = flask.request.get_json()
+        disease_name = answer['answer']
+        print(disease_name)
+
+        disease_list = output['질병명'].unique().tolist()
+        
+        if disease_name in disease_list: 
+            return "true"
+        else: 
+            return "false"
+
+@app.route("/check_if_symptom_isin", methods=['GET', 'POST'])
+def check_if_symptom_isin():
+    if flask.request.method == 'GET':
+        return(flask.render_template('index_test.html')) # main.html & index_test.html 혼용
+    if flask.request.method == 'POST':
+        answer = flask.request.get_json()
+        symptom_name = answer['answer']
+        print(symptom_name)
+        
+        if symptom_name in symp_list: 
+            return "true"
+        else: 
+            return "false"
         
 if __name__ == '__main__':
     app.run(debug=True)

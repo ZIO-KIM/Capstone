@@ -280,7 +280,7 @@
             if (response['index'] == 'true') { // DB에 있는 증상이랑 일치한 증상이 들어왔을 때
                 botui.message.bot({delay: 500, content: response['response']})
                 catch_disease_name = function() {
-                    botui.message.bot({delay: 500, content: '이 카테고리에 해당되는 질병에는 ' + response['list'] + ' 가 있습니다.'})
+                    botui.message.bot({delay: 500, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
                     botui.message.bot({delay: 1000, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
                     .then(
                         function () {
@@ -290,22 +290,26 @@
                                 placeholder: '질병명 입력'
                                 }, 
                             })
-                            }
+                        }
                     ) // 재입력 받기
                     .then(function(res) {
                         if (res.value == '없음') {
-                            botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
-                        }
-
-                        else if (response['list'].includes(res.value) == False) {
-                            botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
-                            catch_disease_name()
+                            botui.message.bot({delay: 1000, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
                         }
 
                         else {
-                            ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
-                            botui.message.bot({delay: 500, content: ICD_specify})
-                            catch_disease_name()
+                            check_correct = callAjax(res.value, '/check_if_disease_isin')
+
+                            if (check_correct == "true") { // 오타 아님
+                                ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
+                                botui.message.bot({delay: 500, content: ICD_specify})
+                                catch_disease_name()
+                            }
+
+                            else { // 오타
+                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
+                                catch_disease_name()
+                            }
                         }
                     })
                 }
@@ -332,50 +336,57 @@
                             botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
                         }
 
-                        else if (response['list'].includes(symptom_input) == False) {
-                            botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
-                            catch_symptom_name()
-                        }
-
                         else {
-                            response = callAjax(symptom_input,'/symptom')
-                        
-                            botui.message.bot({delay: 500, content: response['response']})
-                            catch_disease_name = function() {
-                                botui.message.bot({delay: 500, content: '이 카테고리에 해당되는 질병에는 ' + response['list'] + ' 가 있습니다.'})
-                                botui.message.bot({delay: 1000, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
-                                .then(
-                                    function () {
-                                            return botui.action.text({
-                                            delay: 500,
-                                            action: {
-                                            placeholder: '질병명 입력'
-                                            }, 
-                                        })
+                            check_correct = callAjax(symptom_input, '/check_if_symptom_isin')
+
+                            if (check_correct == "true") {
+                                botui.message.bot({delay: 500, content: response['response']})
+                                catch_disease_name = function() {
+                                    botui.message.bot({delay: 500, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
+                                    botui.message.bot({delay: 1000, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
+                                    .then(
+                                        function () {
+                                                return botui.action.text({
+                                                delay: 500,
+                                                action: {
+                                                placeholder: '질병명 입력'
+                                                }, 
+                                            })
+                                            }
+                                    ) // 재입력 받기
+                                    .then(function(res) {
+                                        if (res.value == '없음') {
+                                            botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
                                         }
-                                ) // 재입력 받기
-                                .then(function(res) {
-                                    if (res.value == '없음') {
-                                        botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
-                                    }
 
-                                    else if (response['list'].includes(res.value) == False) {
-                                        botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
-                                        catch_disease_name()
-                                    }
+                                        else {
+                                            check_correct = callAjax(res.value, '/check_if_disease_isin')
 
-                                    else {
-                                        ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
-                                        botui.message.bot({delay: 500, content: ICD_specify})
-                                        catch_disease_name()
-                                    }
-                                })
-                            } 
-                            catch_disease_name()
+                                            if (check_correct == "true") { // 오타 아님
+                                                ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
+                                                botui.message.bot({delay: 500, content: ICD_specify})
+                                                catch_disease_name()
+                                            }
+
+                                            else { // 오타
+                                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
+                                                catch_disease_name()
+                                            }
+                                        }
+                                    })
+                                } 
+                                catch_disease_name()
+                            }
+
+                            else { // 증상 오타
+                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
+                                catch_symptom_name()
+                            }
                         }
                     })
-                    catch_symptom_name()
+                    
                 }
+                catch_symptom_name()
             }
         })
     }
