@@ -161,7 +161,7 @@ def symptom_input():
                 vector2 = sts.encode(elem)
                 sim = util.cos_sim(vector1, vector2)
                 sim = sim.item()
-                if sim >= 0.5: # 유사도 0.5 이상이면 append
+                if sim >= 0.3: # 유사도 0.3 이상이면 append
                     sim_symp.append(elem)
 
             if sim_symp: 
@@ -178,13 +178,13 @@ def ICD_specify_print():
         return(flask.render_template('index_test.html')) # main.html & index_test.html 혼용
     if flask.request.method == 'POST':
         answer = flask.request.get_json()
-        ICD = answer['answer']
-        print(ICD)
+        disease_name = answer['answer']
+        print(disease_name)
 
-        disease = str(output.loc[output['ICD']==ICD,'질병명'].tolist())
-        describe_disease = str(output.loc[output['ICD']==ICD,'설명'].tolist())
+        tmp = output.loc[output['질병명']==disease_name,:]
+        describe_disease = filter.loc[tmp.index[0],"설명"]
 
-        return jsonify({'질병명': disease, '설명': describe_disease})
+        return jsonify(describe_disease)
         
 if __name__ == '__main__':
     app.run(debug=True)
