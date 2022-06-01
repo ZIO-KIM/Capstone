@@ -340,6 +340,8 @@
                             check_correct = callAjax(symptom_input, '/check_if_symptom_isin')
 
                             if (check_correct == "true") {
+                                response = callAjax(symptom_input,'/symptom')
+                                
                                 botui.message.bot({delay: 500, content: response['response']})
                                 catch_disease_name = function() {
                                     botui.message.bot({delay: 500, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
