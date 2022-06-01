@@ -276,27 +276,33 @@
         .then(function (res) {
             symptom_input = res.value
             response = callAjax(symptom_input,'/symptom')
-            botui.message.bot({delay: 500, content: '유사도 검사 결과, 의사소통 DB의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.'})
-            botui.message.bot({delay: 1000, content: response})
-            botui.message.bot({delay: 1500, content: '다음 중 원하는 증상을 선택하여 입력해 주세요.'})
-            botui.message.bot({delay: 2000, content: '원하시는 증상이 없을 경우, "없음" 을 입력해 주세요. '})
-            .then(function () {
-            return botui.action.text({
-                delay: 500,
-                action: {
-                    placeholder: '유사한 증상 중 하나를 입력'
-                }, 
-            })
-            }) // 재입력 받기
-            .then(function(res) {
-                symptom_input = res.value
 
-                response = callAjax(symptom_input,'/symptom') 
+            if (response['index'] == 'true') { // DB에 있는 증상이랑 일치한 증상이 들어왔을 때
                 botui.message.bot({delay: 500, content: response['response']})
+            }
+            else { // 유사한 증상들 출력해주고 다시 한번 input 받아야 할 때
+                botui.message.bot({delay: 500, content: '유사도 검사 결과, 의사소통 DB의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.'})
+                botui.message.bot({delay: 1000, content: response})
+                botui.message.bot({delay: 1500, content: '다음 중 원하는 증상을 선택하여 입력해 주세요.'})
+                botui.message.bot({delay: 2000, content: '원하시는 증상이 없을 경우, "없음" 을 입력해 주세요. '})
+                .then(function () {
+                    return botui.action.text({
+                    delay: 500,
+                    action: {
+                        placeholder: '유사한 증상 중 하나를 입력'
+                    }, 
+                })
+                }) // 재입력 받기
+                .then(function(res) {
+                    symptom_input = res.value
 
-                ICD_specify = callAjax(response['ICD'],'/ICD_specify') // 자세한 설명 출력
-                botui.message.bot({delay: 500, content: ICD_specify})
-            })
+                    response = callAjax(symptom_input,'/symptom') 
+                    botui.message.bot({delay: 500, content: response['response']})
+
+                    ICD_specify = callAjax(response['ICD'],'/ICD_specify') // 자세한 설명 출력
+                    botui.message.bot({delay: 500, content: ICD_specify})
+                })
+            }
         })
     }
 

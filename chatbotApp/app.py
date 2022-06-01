@@ -30,9 +30,13 @@ symp_list = data['Symptoms'].unique().tolist()
 # 증상 dictionary json load
 with open('data/지식인_증상_유사단어_dictionary_Pororo.json','r') as f:
     sample_symptoms_dict = json.load(f)
+# 필터링 데이터 load
+filter = pd.read_csv('data/필터링1차.csv', encoding = 'cp949')
+filter_list = filter['입력'].unique().tolist()
+
 # define 유사도 검사 model
-# from sentence_transformers import SentenceTransformer, util
-# sts = SentenceTransformer('snunlp/KR-SBERT-V40K-klueNLI-augSTS') 
+from sentence_transformers import SentenceTransformer, util
+sts = SentenceTransformer('snunlp/KR-SBERT-V40K-klueNLI-augSTS') 
 
 #Flask initialization
 app = flask.Flask(__name__, template_folder='templates')
@@ -44,7 +48,6 @@ app = flask.Flask(__name__, template_folder='templates')
 
 # conversation data dictionary
 conv_data = {}
-
 
 @app.route('/', methods=['GET', 'POST'])
 
@@ -130,35 +133,40 @@ def symptom_input():
         symptom = answer['answer']
         print(symptom)
 
-        if symptom in symp_list:  # DB에 가지고 있는 증상과 바로 일치할 경우 - 이 경우에만 출력
+        if symptom in symp_list:  # DB에 가지고 있는 증상과 바로 일치할 경우 - 이 경우에만 바로 출력
             conv_data.update({"symptoms": symptom})
             predicted_disease = processor.predict(conv_data)
             output_specified = str(output.loc[output['ICD']==predicted_disease,'질병명'].dropna().unique().tolist())
             response = "검사 결과, 예상되는 질병은 {} 입니다. <br>  이 카테고리에 해당되는 질병에는 {} 가 있습니다.".format(predicted_disease, output_specified)
-            return jsonify({'response': response, 'ICD': predicted_disease})
+            return jsonify({'index': 'true', 'response': response, 'ICD': predicted_disease})
         
+        elif symptom in filter_list: # 필터링 데이터에 있는 입력과 바로 일치할 경우
+            tmp = filter.loc[filter['입력']==symptom,:]
+            real_symptom = filter.loc[tmp.index[0],"증상"]
+            return jsonify({'index': 'false', 'list': real_symptom})
+
         elif symptom in sample_symptoms_dict:  # 증상 dictionary key에 입력된 증상이 있을 경우
             sim_symp = sample_symptoms_dict[symptom] # 해당 key 에 매핑된 유사증상 list 불러오기
-            return jsonify(sim_symp)
+            return jsonify({'index': 'false', 'list': sim_symp})
 
             # conv_data.update({"symptoms": answer})
             # predicted_disease = processor.predict(conv_data)
             # output_specified = str(output.loc[output['ICD']==predicted_disease,'질병명'].dropna().unique().tolist())
             # response = "예상되는 질병은 {} 입니다. <br>  이 카테고리에 해당되는 질병에는 {} 가 있습니다.".format(predicted_disease, output_specified)
 
-        else: # 없는 경우 - pororo 호출
+        else: # 없는 경우 - sbert 호출
+            vector1 = sts.encode(symptom) # 입력받은 증상 encode
             sim_symp = []
-            # for elem in symp_list: 
-            #     if sts(answer,elem) >= 0.5: # 유사도 0.5 이상이면 append
-            #         sim_symp.append(elem)
+            for elem in symp_list: 
+                vector2 = sts.encode(elem)
+                sim = util.cos_sim(vector1, vector2)
+                sim = sim.item()
+                if sim >= 0.5: # 유사도 0.5 이상이면 append
+                    sim_symp.append(elem)
 
             if sim_symp: 
-                answer = sim_symp[0]  # 일단 유사증상 중 0번째로 임의 치환 (사용자 인풋 안받기 위해)
-
-                conv_data.update({"symptoms": answer})
-                predicted_disease = processor.predict(conv_data)
-                output_specified = str(output.loc[output['ICD']==predicted_disease,'질병명'].dropna().unique().tolist())
-                response = "검사 결과, 예상되는 질병은 {} 입니다. <br>  이 카테고리에 해당되는 질병에는 {} 가 있습니다.".format(predicted_disease, output_specified)
+                return jsonify({'index': 'false', 'list': sim_symp})
+                
             else: # 유사도 0.5 이상인 증상이 없을 때
                 response = "의사소통 데이터베이스에 입력하신 증상이 없습니다. 불편을 드려 죄송합니다. <br> 빠른 시일 내에 가까운 동물병원 방문을 추천드립니다."
 
