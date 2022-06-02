@@ -11,6 +11,33 @@ from flask import jsonify
 
 sys.setrecursionlimit(50000)
 
+# error logging
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {
+        'default': {
+            'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO', # INFO level 이상의 데이터를 로깅
+            # 로깅 파일이 계속 쌓이지 않도록 특정 용량을 넘으면 가장 오래된 로그가 삭제됨.
+            'class': 'logging.handlers.RotatingFileHandler', 
+            'filename': 'test_error.log', # 저장 경로
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'default',
+        },
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['file']
+    }
+})
+
 # processor
 import processor
 
@@ -37,6 +64,8 @@ filter_list = filter['입력'].unique().tolist()
 # define 유사도 검사 model
 from sentence_transformers import SentenceTransformer, util
 sts = SentenceTransformer('snunlp/KR-SBERT-V40K-klueNLI-augSTS') 
+# # 영문 모델 시도
+# sts = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
 
 #Flask initialization
 app = flask.Flask(__name__, template_folder='templates')
@@ -170,6 +199,12 @@ def symptom_input():
                 
             else: # 유사도 0.5 이상인 증상이 없을 때
                 response = "의사소통 데이터베이스에 입력하신 증상이 없습니다. 불편을 드려 죄송합니다. <br> 빠른 시일 내에 가까운 동물병원 방문을 추천드립니다."
+
+            # 영문 모델 load test
+            # query_embedding = sts.encode('How big is London')
+            # passage_embedding = sts.encode(['London has 9,787,426 inhabitants at the 2011 census',
+            #                       'London is known for its finacial district'])
+            # response = util.dot_score(query_embedding, passage_embedding)
 
             return response
 
