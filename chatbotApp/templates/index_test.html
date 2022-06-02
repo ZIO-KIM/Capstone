@@ -320,6 +320,7 @@
                 catch_disease_name()
             }
             else { // 유사한 증상들 출력해주고 다시 한번 input 받아야 할 때
+                alert('입력하신 증상에 대한 유사도 검사 중입니다. 시간이 좀 걸릴 수 있으니 잠시만 기다려주세요 ...')
                 catch_symptom_name = function() {
                     botui.message.bot({delay: 500, content: '유사도 검사 결과, 의사소통 DB의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.'})
                     botui.message.bot({delay: 1000, content: response['list']})
