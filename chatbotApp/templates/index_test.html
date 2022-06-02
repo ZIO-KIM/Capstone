@@ -124,7 +124,7 @@
             }
         })
         
-        botui.message.bot({delay: 1000, content: '말티즈, 푸들, 포메라니안, 시추, 비숑프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스훈트, 진돗개, 웰시코기, 시바견, 코커스패니얼, 믹스'})
+        botui.message.bot({delay: 1000, content: '말티즈, 푸들, 포메라니안, 시추, 비숑프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스 훈트, 진돗개, 웰시코기, 시바견, 코커스패니얼, 믹스'})
         botui.message.bot({delay: 1500, content: '종을 모르실 경우, "종 모름" 을 입력해주세요.'})
 
     }  // breedService end.
@@ -259,7 +259,7 @@
     }
 
 
-    symptomService = function() { // symptom 입력 & check process 1 - 인풋 받고 증상 1차 검사
+    symptomService = function() { // symptom 입력 & check process 1 - 인풋 받고 증상 검사
         botui.message
         .bot({
             delay: 1000,
@@ -279,9 +279,13 @@
 
             if (response['index'] == 'true') { // DB에 있는 증상이랑 일치한 증상이 들어왔을 때
                 botui.message.bot({delay: 500, content: response['response']})
+                if (response['response_high_prob']) { // 있으면 출력
+                    botui.message.bot({delay: 1000, content: response['response_high_prob']})
+                }
+                    
                 catch_disease_name = function() {
-                    botui.message.bot({delay: 500, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
-                    botui.message.bot({delay: 1000, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
+                    botui.message.bot({delay: 1000, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
+                    botui.message.bot({delay: 1500, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
                     .then(
                         function () {
                                 return botui.action.text({
@@ -343,9 +347,13 @@
                                 response = callAjax(symptom_input,'/symptom')
                                 
                                 botui.message.bot({delay: 500, content: response['response']})
+                                if (response['response_high_prob']) { // 있으면 출력
+                                    botui.message.bot({delay: 1000, content: response['response_high_prob']})
+                                }
+
                                 catch_disease_name = function() {
-                                    botui.message.bot({delay: 500, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
-                                    botui.message.bot({delay: 1000, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
+                                    botui.message.bot({delay: 1000, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
+                                    botui.message.bot({delay: 1500, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
                                     .then(
                                         function () {
                                                 return botui.action.text({

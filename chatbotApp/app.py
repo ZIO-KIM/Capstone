@@ -164,11 +164,57 @@ def symptom_input():
 
         if symptom in symp_list:  # DB에 가지고 있는 증상과 바로 일치할 경우 - 이 경우에만 바로 출력
             conv_data.update({"symptoms": symptom})
-            predicted_disease = processor.predict(conv_data)
+            predicted_disease = processor.predict(conv_data) # predict
+
+            # 분류된 ICD에 대한 기본 질병 설명
+            tmp = output.loc[output['ICD'] == predicted_disease,:].reset_index(drop = True)
+            predicted_disease_describe = tmp.loc[tmp.index[0], '설명']
+            
+            # 분류된 ICD의 세부 질병 list 생성
             output_specified = str(output.loc[output['ICD']==predicted_disease,'질병명'].dropna().unique().tolist())
+            
+            # 분류된 ICD의 종, 나이, 성별에 따른 특정조건 검사
+            disease_high_prob = np.nan
+            why = np.nan
+            tmp = output.loc[output['ICD'] == predicted_disease,['질병명', '품종', '최소 나이', '최대 나이', '성별']]
+            disease_tmp = tmp['질병명'].dropna().tolist()
+            for item in disease_tmp: 
+                breed_tmp = tmp.loc[tmp['질병명'] == item, '품종'].tolist()
+                age_range_tmp = tmp.loc[tmp['질병명'] == item, ['최소 나이', '최대 나이']].values
+                age_min = age_range_tmp[0][0]
+                age_max = age_range_tmp[0][1]
+                sex_tmp = tmp.loc[tmp['질병명'] == item, '성별'].tolist()
+
+                if conv_data['breed'] in breed_tmp: 
+                    disease_high_prob = item
+                    why = conv_data['breed']
+                elif (age_min is not np.nan) and (age_max is not np.nan) and age_min <= conv_data['age'] <= age_max: # 최소, 최대 다 존재할때
+                    disease_high_prob = item
+                    why = conv_data['age'] + '세'
+                elif (age_min is not np.nan) and (age_max is np.nan) and age_min <= conv_data['age']: # 최소만 있을 때
+                    disease_high_prob = item
+                    why = conv_data['age'] + '세'
+                elif (age_min is np.nan) and (age_max is not np.nan) and conv_data['age'] <= age_max: # 최대만 있을 때
+                    disease_high_prob = item
+                    why = conv_data['age'] + '세'
+                elif conv_data['sex'] in sex_tmp: 
+                    disease_high_prob = item
+                    why = conv_data['sex']
+                    if why == 'F': 
+                        why = '암컷'
+                    elif why == 'M': 
+                        why = '수컷'
+
+            response = "검사 결과, 예상되는 질병은 {} 입니다. {}".format(predicted_disease, predicted_disease_describe)
+
+            if disease_high_prob is not np.nan: # 특정 조건으로 인해 발병 확률이 높은 질병이 있을 경우
+                response_high_prob = "분류된 질병 중, 입력하신 반려견의 조건인 '{}' 때문에 '{}' 질병의 발병 확률이 더욱 높을 것으로 예상됩니다. 유의하시기 바랍니다.".format(why, disease_high_prob)
+                return jsonify({'index': 'true', 'response': response, 'response_high_prob' : response_high_prob, 'ICD': predicted_disease, 'list': output_specified})
+
+            else: 
+                return jsonify({'index': 'true', 'response': response, 'ICD': predicted_disease, 'list': output_specified})
             # if (predicted_disease == "질병 분류를 특정할 수 없는 경우")
-            response = "검사 결과, 예상되는 질병은 {} 입니다.".format(predicted_disease)
-            return jsonify({'index': 'true', 'response': response, 'ICD': predicted_disease, 'list': output_specified})
+            
         
         elif symptom in filter_list: # 필터링 데이터에 있는 입력과 바로 일치할 경우
             tmp = filter.loc[filter['입력']==symptom,:]
