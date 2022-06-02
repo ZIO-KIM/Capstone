@@ -6,12 +6,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui-theme-default.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo&display=swap');
+    </style>
 </head>
 
-<body>
+<body style="background-color: rgb(21, 62, 90);">
     <script src="https://cdn.jsdelivr.net/vue/latest/vue.min.js"></script>
     <script src="https://unpkg.com/botui/build/botui.js"></script>
-    <div class="botui-app-container" id="reminder-bot">
+
+    <div class="title" style="font-family: 'Nanum Myeongjo', serif;margin-right:45%; margin-top:20%">
+        <h1 style="color:aliceblue">AI Pet Doctor</h1>
+        <h1 style="color:aliceblue">의사소통</h1>
+    </div>
+    
+    <div class="botui-app-container" id="reminder-bot" style="margin-top: -260px;margin-right:20%;">
         <bot-ui></bot-ui>
     </div>
 
