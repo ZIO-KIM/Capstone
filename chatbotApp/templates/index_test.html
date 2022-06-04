@@ -7,7 +7,12 @@
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui-theme-default.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo&family=Noto+Sans+KR&display=swap');
+    </style>
+    <style class="custom">
+        .custom {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
     </style>
 </head>
 
@@ -21,7 +26,7 @@
         <h1 style="color:aliceblue; font-size: 50px;">의사소통</h1>
     </div>
 
-    <div clsss="phonecontainer" style="width:600px; height:750px; z-index:2; margin-left:45%; margin-top: -430px;">
+    <div class="phonecontainer" style="width:600px; height:750px; z-index:2; margin-left:45%; margin-top: -430px;">
         <img src="static/image-from-rawpixel-id-2839169-original.png" alt="phone image" style="width:600px; height:750px;">
         <div class="botui-app-container" id="reminder-bot" style="position:absolute; margin-left: 8.4%; z-index:1; width: 390px; margin-top: -650px; z-index: 1; ">
             <bot-ui style="width:350px; height:550px;"></bot-ui>
@@ -33,26 +38,31 @@
 
     botui.message.add({
         delay: 500, 
-        content: '안녕하세요! 증상 기반 반려견 질환 진단 챗봇 의사소통입니다.'
+        content: '안녕하세요! 증상 기반 반려견 질환 진단 챗봇 의사소통입니다.',
+        cssClass: 'custom'
     });
     botui.message.add({
         delay: 1000, 
         content: '다음 안내에 따라 반려견에 대한 사전 정보를 입력해주세요.'
+        ,cssClass: 'custom'
     });
 
     botui.message // start
         .bot({
             delay: 1500, 
-            content: '시작하시겠습니까?'})
+            content: '시작하시겠습니까?'
+            ,cssClass: 'custom'})
             .then(function () {
                 return botui.action.button({
                     delay: 1000,
                     action: [{
                         text: '네!',
                         value: 'start'
+                        ,cssClass: 'custom'
                     }, {
                         text: '아니요 :(',
                         value: 'no'
+                        ,cssClass: 'custom'
                     }]
                 })
             }).then(function (res) {
@@ -61,7 +71,7 @@
                     breedService();
                 }
                 else {
-                    botui.message.bot({delay: 500, content: '이용 감사합니다! :)'});
+                    botui.message.bot({delay: 500, content: '이용 감사합니다! :)',cssClass: 'custom'});
                 }
             });
 
@@ -86,12 +96,14 @@
         .bot({
             delay: 500,
             content: '반려견의 종은 무엇인가요? 다음 중 해당하는 종을 입력해주세요.'
+            ,cssClass: 'custom'
         }) 
         .then(function () {
             return botui.action.text({
                 delay: 1500,
                 action: {
                     placeholder: '말티즈, 포메라니안 ...'
+                    ,cssClass: 'custom'
                 }, 
             })
         }) // 입력받기
@@ -99,46 +111,48 @@
             breed_input = res.value
 
             if (breed_input == "종 모름") {
-                botui.message.bot({delay: 500, content: '"믹스" 로 입력하시겠습니까?'})
+                botui.message.bot({delay: 500, content: '"믹스" 로 입력하시겠습니까?',cssClass: 'custom'})
                 .then(function () {
                     return botui.action.button({
                         delay: 500,
                         action: [{
                             text: '네',
                             value: 'yes'
+                            ,cssClass: 'custom'
                         }, {
                             text: '아니오 (서비스 종료)',
                             value: 'no'
+                            ,cssClass: 'custom'
                         }]
                     })
                 })
                 .then(function(res) {
                     if (res.value == 'yes') {
                         response = callAjax('mixed','/breed') // mixed 로 입력
-                        botui.message.bot({delay: 500, content: '반려견의 종이 ' + response + ' (으) 로 입력되었습니다.'})
+                        botui.message.bot({delay: 500, content: '반려견의 종이 ' + response + ' (으) 로 입력되었습니다.',cssClass: 'custom'})
                         ageService() // breedService end. Move to ageService; 
                     }
                     else {
-                        botui.message.bot({delay: 500, content: '의사소통 서비스를 종료합니다. 만족할 만한 서비스를 제공해 드리지 못해 죄송합니다.'})
+                        botui.message.bot({delay: 500, content: '의사소통 서비스를 종료합니다. 만족할 만한 서비스를 제공해 드리지 못해 죄송합니다.',cssClass: 'custom'})
                     }
                 })
             }
             else { // 종이 한번에 제대로 입력됨 or 오타 or DB 에 없는경우
                 response = callAjax(breed_input,'/breed')
                 if (response == "wrong") { // DB 에 없음
-                    botui.message.bot({delay: 500, content: '입력하신 종이 의사소통 DB에 없습니다.'})
-                    botui.message.bot({delay: 500, content: '오타를 수정하여 재입력 하시거나, "종 모름" 을 입력하여 믹스견으로 계속해 주세요.'})
+                    botui.message.bot({delay: 500, content: '입력하신 종이 의사소통 DB에 없습니다.',cssClass: 'custom'})
+                    botui.message.bot({delay: 500, content: '오타를 수정하여 재입력 하시거나, "종 모름" 을 입력하여 믹스견으로 계속해 주세요.',cssClass: 'custom'})
                     breedService() // recall whole process
                 }
                 else { // 제대로 입력
-                    botui.message.bot({delay: 500, content: '반려견의 종이 ' + response + ' (으) 로 입력되었습니다.'})
+                    botui.message.bot({delay: 500, content: '반려견의 종이 ' + response + ' (으) 로 입력되었습니다.',cssClass: 'custom'})
                     ageService() // breedService end. Move to ageService; 
                 }
             }
         })
         
-        botui.message.bot({delay: 1000, content: '말티즈, 푸들, 포메라니안, 시추, 비숑 프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스 훈트, 진돗개, 웰시코기, 시바견, 코커스패니얼, 믹스'})
-        botui.message.bot({delay: 1500, content: '종을 모르실 경우, "종 모름" 을 입력해주세요.'})
+        botui.message.bot({delay: 1000, content: '말티즈, 푸들, 포메라니안, 시추, 비숑 프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스 훈트, 진돗개, 웰시코기, 시바견, 코커스패니얼, 믹스',cssClass: 'custom'})
+        botui.message.bot({delay: 1500, content: '종을 모르실 경우, "종 모름" 을 입력해주세요.',cssClass: 'custom'})
 
     }  // breedService end.
 
@@ -148,12 +162,14 @@
         .bot({
             delay: 1000,
             content: '반려견의 나이는 몇 살인가요? (숫자만 입력해주세요)'
+            ,cssClass: 'custom'
         }) 
         .then(function () {
             return botui.action.text({
                 delay: 2000,
                 action: {
                     placeholder: '0, 1, 2 ...'
+                    ,cssClass: 'custom'
                 }, 
             })
         }) // 입력받기
@@ -161,53 +177,56 @@
             age_input = res.value
 
             if (age_input == "모름") {
-                botui.message.bot({delay: 500, content: '정확한 나이를 모르시면, 다음 중 가장 근접한 나이대를 선택해주세요. '})
+                botui.message.bot({delay: 500, content: '정확한 나이를 모르시면, 다음 중 가장 근접한 나이대를 선택해주세요. ',cssClass: 'custom'})
                 .then(function () {
                     return botui.action.button({
                         delay: 500,
                         action: [{
                             text: '새끼 (1세 미만)',
                             value: 'young'
+                            ,cssClass: 'custom'
                         }, {
                             text: '중년 (5세 미만)',
                             value: 'midage'
+                            ,cssClass: 'custom'
                         }, {
                             text: '노령 (8세 이상)',
                             value: 'old'
+                            ,cssClass: 'custom'
                         }]
                     })
                 })
                 .then(function(res) {
                     if (res.value == 'young') {
                         response = callAjax('young','/age') // young 전달
-                        botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.'})
+                        botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.',cssClass: 'custom'})
                         sexService() // ageService end. Move to sexService; 
                     }
                     else if (res.value == 'midage') {
                         response = callAjax('midage','/age') // midage 전달
-                        botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.'})
+                        botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.',cssClass: 'custom'})
                         sexService() // ageService end. Move to sexService;
                     }
                     else { 
                         response = callAjax('old','/age') // old 전달
-                        botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.'})
+                        botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.',cssClass: 'custom'})
                         sexService() // ageService end. Move to sexService;
                     }
                 })
             }
             else if ((age_input >= 30) || (age_input < 0)) { // 나이가 너무 많거나 0세 미만 입력
-                botui.message.bot({delay: 500, content: '입력하신 나이가 유효하지 않습니다. 다시 입력해주세요.'})
+                botui.message.bot({delay: 500, content: '입력하신 나이가 유효하지 않습니다. 다시 입력해주세요.',cssClass: 'custom'})
                 ageService() // ageService process recall
             }
             else { // 나이가 한번에 숫자로 입력됨
                 response = callAjax(age_input,'/age')
-                botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.'})
+                botui.message.bot({delay: 500, content: '반려견의 나이가 ' + response + ' 세로 입력되었습니다.',cssClass: 'custom'})
                 sexService() // ageService end. Move to sexService;
             }
         })
         
-        botui.message.bot({delay: 1500, content: '나이를 모를 경우, "모름" 을 입력해주세요.'})
-        botui.message.bot({delay: 2000, content: '1살 미만일 경우, "0" 을 입력해주세요. '})
+        botui.message.bot({delay: 1500, content: '나이를 모를 경우, "모름" 을 입력해주세요.',cssClass: 'custom'})
+        botui.message.bot({delay: 2000, content: '1살 미만일 경우, "0" 을 입력해주세요. ',cssClass: 'custom'})
     }
 
 
@@ -216,6 +235,7 @@
         .bot({
             delay: 1000,
             content: '반려견의 성별은 무엇인가요?'
+            ,cssClass: 'custom'
         }) 
         .then(function () {
             return botui.action.button({
@@ -223,15 +243,19 @@
                 action: [{
                     text: '수컷',
                     value: 'M'
+                    ,cssClass: 'custom'
                 }, {
                     text: '암컷',
                     value: 'F'
+                    ,cssClass: 'custom'
                 }, {
                     text: '중성화',
                     value: 'N'
+                    ,cssClass: 'custom'
                 }, {
                     text: '모름',
                     value: 'unknown'
+                    ,cssClass: 'custom'
                 }]
             })
         }) // 입력받기
@@ -239,33 +263,35 @@
             sex_input = res.value
 
             if (sex_input == "unknown") {
-                botui.message.bot({delay: 500, content: '성별을 모르실 경우, 생략하고 계속하시겠습니까?'})
+                botui.message.bot({delay: 500, content: '성별을 모르실 경우, 생략하고 계속하시겠습니까?',cssClass: 'custom'})
                 .then(function () {
                     return botui.action.button({
                         delay: 500,
                         action: [{
                             text: '네',
                             value: 'yes'
+                            ,cssClass: 'custom'
                         }, {
                             text: '아니오 (서비스 종료)',
                             value: 'no'
+                            ,cssClass: 'custom'
                         }]
                     })
                 })
                 .then(function(res) {
                     if (res.value == 'yes') {
                         response = callAjax('unknown','/sex') // unknown 전달
-                        botui.message.bot({delay: 500, content: '반려견의 성별이 ' + response + '되었습니다.'})
+                        botui.message.bot({delay: 500, content: '반려견의 성별이 ' + response + '되었습니다.',cssClass: 'custom'})
                         symptomService() // sexService end. Move to symptomService; 
                     }
                     else { 
-                        botui.message.bot({delay: 500, content: '의사소통 서비스를 종료합니다. 만족할 만한 서비스를 제공해 드리지 못해 죄송합니다.'})
+                        botui.message.bot({delay: 500, content: '의사소통 서비스를 종료합니다. 만족할 만한 서비스를 제공해 드리지 못해 죄송합니다.',cssClass: 'custom'})
                     }
                 })
             }
             else { // 입력된 성별 value 그대로 전달
                 response = callAjax(sex_input,'/sex')
-                botui.message.bot({delay: 500, content: '반려견의 성별이 ' + response + ' (으) 로 입력되었습니다.'})
+                botui.message.bot({delay: 500, content: '반려견의 성별이 ' + response + ' (으) 로 입력되었습니다.',cssClass: 'custom'})
                 symptomService() // sexService end. Move to symptomService;
             }
         })
@@ -277,12 +303,14 @@
         .bot({
             delay: 1000,
             content: '이제, 반려견이 보이는 증상을 단어 혹은 문장으로 입력해주세요.'
+            ,cssClass: 'custom'
         }) 
         .then(function () {
             return botui.action.text({
                 delay: 500,
                 action: {
                     placeholder: '구토, 털 빠짐, 설사 ...'
+                    ,cssClass: 'custom'
                 }, 
             })
         }) // 입력받기
@@ -291,27 +319,28 @@
             response = callAjax(symptom_input,'/symptom')
 
             if (response['index'] == 'true') { // DB에 있는 증상이랑 일치한 증상이 들어왔을 때
-                botui.message.bot({delay: 500, content: response['response']})
+                botui.message.bot({delay: 500, content: response['response'],cssClass: 'custom'})
                 if (response['response_high_prob']) { // 있으면 출력
-                    botui.message.bot({delay: 1000, content: response['response_high_prob']})
+                    botui.message.bot({delay: 1000, content: response['response_high_prob'],cssClass: 'custom'})
                 }
                     
                 catch_disease_name = function() {
-                    botui.message.bot({delay: 1000, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
-                    botui.message.bot({delay: 1500, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
+                    botui.message.bot({delay: 1000, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.',cssClass: 'custom'})
+                    botui.message.bot({delay: 1500, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.',cssClass: 'custom'})
                     .then(
                         function () {
                                 return botui.action.text({
                                 delay: 500,
                                 action: {
                                 placeholder: '질병명 입력'
+                                ,cssClass: 'custom'
                                 }, 
                             })
                         }
                     ) // 재입력 받기
                     .then(function(res) {
                         if (res.value == '없음') {
-                            botui.message.bot({delay: 1000, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
+                            botui.message.bot({delay: 1000, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다.",cssClass: 'custom'})
                         }
 
                         else {
@@ -319,12 +348,12 @@
 
                             if (check_correct == "true") { // 오타 아님
                                 ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
-                                botui.message.bot({delay: 500, content: ICD_specify})
+                                botui.message.bot({delay: 500, content: ICD_specify,cssClass: 'custom'})
                                 catch_disease_name()
                             }
 
                             else { // 오타
-                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
+                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요.",cssClass: 'custom'})
                                 catch_disease_name()
                             }
                         }
@@ -335,15 +364,16 @@
             else { // 유사한 증상들 출력해주고 다시 한번 input 받아야 할 때
                 alert('입력하신 증상에 대한 유사도 검사 중입니다. 시간이 좀 걸릴 수 있으니 잠시만 기다려주세요 ...')
                 catch_symptom_name = function() {
-                    botui.message.bot({delay: 500, content: '유사도 검사 결과, 의사소통 DB의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.'})
-                    botui.message.bot({delay: 1000, content: response['list']})
-                    botui.message.bot({delay: 1500, content: '다음 중 원하는 증상을 선택하여 입력해 주세요.'})
-                    botui.message.bot({delay: 2000, content: '원하시는 증상이 없을 경우, "없음" 을 입력해 주세요. '})
+                    botui.message.bot({delay: 500, content: '유사도 검사 결과, 의사소통 DB의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.',cssClass: 'custom'})
+                    botui.message.bot({delay: 1000, content: response['list'],cssClass: 'custom'})
+                    botui.message.bot({delay: 1500, content: '다음 중 원하는 증상을 선택하여 입력해 주세요.',cssClass: 'custom'})
+                    botui.message.bot({delay: 2000, content: '원하시는 증상이 없을 경우, "없음" 을 입력해 주세요. ',cssClass: 'custom'})
                     .then(function () {
                         return botui.action.text({
                         delay: 500,
                         action: {
                             placeholder: '유사한 증상 중 하나를 입력'
+                            ,cssClass: 'custom'
                         }, 
                     })
                     }) // 재입력 받기
@@ -351,7 +381,7 @@
                         symptom_input = res.value
 
                         if (symptom_input == "없음") {
-                            botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
+                            botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다.",cssClass: 'custom'})
                         }
 
                         else {
@@ -360,27 +390,28 @@
                             if (check_correct == "true") {
                                 response = callAjax(symptom_input,'/symptom')
                                 
-                                botui.message.bot({delay: 500, content: response['response']})
+                                botui.message.bot({delay: 500, content: response['response'],cssClass: 'custom'})
                                 if (response['response_high_prob']) { // 있으면 출력
-                                    botui.message.bot({delay: 1000, content: response['response_high_prob']})
+                                    botui.message.bot({delay: 1000, content: response['response_high_prob'],cssClass: 'custom'})
                                 }
 
                                 catch_disease_name = function() {
-                                    botui.message.bot({delay: 1000, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.'})
-                                    botui.message.bot({delay: 1500, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.'})
+                                    botui.message.bot({delay: 1000, content: '진단된 카테고리의 질병에는 ' + response['list'] + ' 가 있습니다.',cssClass: 'custom'})
+                                    botui.message.bot({delay: 1500, content: '다음 중 더 자세한 설명을 보고 싶으신 질병명을 입력해주세요. 종료를 원하실 경우, "없음" 을 입력해주세요.',cssClass: 'custom'})
                                     .then(
                                         function () {
                                                 return botui.action.text({
                                                 delay: 500,
                                                 action: {
                                                 placeholder: '질병명 입력'
+                                                ,cssClass: 'custom'
                                                 }, 
                                             })
                                             }
                                     ) // 재입력 받기
                                     .then(function(res) {
                                         if (res.value == '없음') {
-                                            botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다."})
+                                            botui.message.bot({delay: 500, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다.",cssClass: 'custom'})
                                         }
 
                                         else {
@@ -388,12 +419,12 @@
 
                                             if (check_correct == "true") { // 오타 아님
                                                 ICD_specify = callAjax(res.value,'/ICD_specify') // 자세한 설명 출력
-                                                botui.message.bot({delay: 500, content: ICD_specify})
+                                                botui.message.bot({delay: 500, content: ICD_specify,cssClass: 'custom'})
                                                 catch_disease_name()
                                             }
 
                                             else { // 오타
-                                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
+                                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요.",cssClass: 'custom'})
                                                 catch_disease_name()
                                             }
                                         }
@@ -403,7 +434,7 @@
                             }
 
                             else { // 증상 오타
-                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요."})
+                                botui.message.bot({delay: 500, content: "잘못된 입력입니다. 다시 입력해주세요.",cssClass: 'custom'})
                                 catch_symptom_name()
                             }
                         }
