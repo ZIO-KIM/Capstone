@@ -4,20 +4,8 @@ import pandas as pd
 from pycaret.classification import *
 import json
 
-pipeline_path = 'model/model_pipeline_remove4'
+pipeline_path = 'model/model_pipeline_final'
 model = load_model(pipeline_path)
-
-
-# final data import
-data = pd.read_csv('data/final_data.csv', encoding = 'cp949')
-data.drop(columns=['Unnamed: 0'], axis = 1, inplace = True)
-# breed list
-breed_list = data['Breed'].unique().tolist()
-# symp list
-symp_list = data['Symptoms'].unique().tolist()
-# 증상 dictionary json load
-with open('data/지식인_증상_유사단어_dictionary_Pororo.json','r') as f:
-    sample_symptoms_dict = json.load(f)
 
 
 def predict(conv_data): 

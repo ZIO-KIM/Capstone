@@ -8,6 +8,7 @@ import json
 # from dooly import Dooly
 import sys
 from flask import jsonify
+import requests
 
 sys.setrecursionlimit(50000)
 
@@ -41,15 +42,15 @@ dictConfig({
 # processor
 import processor
 
-pipeline_path = 'model/model_pipeline_remove4'
+pipeline_path = 'model/model_pipeline_final'
 model = load_model(pipeline_path)
 
 
 # final data import
 data = pd.read_csv('data/final_data.csv', encoding = 'cp949')
-data.drop(columns=['Unnamed: 0'], axis = 1, inplace = True)
+# data.drop(columns=['Unnamed: 0'], axis = 1, inplace = True)
 # output data import
-output = pd.read_csv('data/출력 종합본.csv', encoding = 'euc-kr')
+output = pd.read_excel('data/출력 종합_최종수정본220603.xlsx')
 # breed list
 breed_list = data['Breed'].unique().tolist()
 # symp list
@@ -66,6 +67,13 @@ from sentence_transformers import SentenceTransformer, util
 sts = SentenceTransformer('snunlp/KR-SBERT-V40K-klueNLI-augSTS') 
 # # 영문 모델 시도
 # sts = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
+# huggingface API
+API_URL = "https://api-inference.huggingface.co/models/jhgan/ko-sbert-multitask"
+headers = {"Authorization": f"Bearer {'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJpbmZpbml0eSIsImV4cCI6MTY1NDg0NjM2NSwiaWF0IjoxNjU0MjQxNTY1LCJpc3MiOiJodWdnaW5nZmFjZSIsImF1ZCI6IlNlam9uZyB1bml2ZXJzaXR5In0.ToBF-0_hKsrAE6QGgi91qO3_R7s_LKHptS2aIklpKSd2MXDaSfagUeZ0miUfg0M4emyiaU21R_uG9X1sGKnkxk9D955W8gA2chlq8T_HvBPzbuqy8Jn901GFR9Hxwbs-CQGnwvzrndn-9AX5R1toTGP09Xdjza2-kNkDREqvQc3rfhsE8vNF4qtbBWai_3hdCU9v8vmYVdXYfomjXLWcWqNQsiIN1T8_cRLjSg5-on-yUGOuZGaw38UCf5dcIRSU_y-mNT7aT_fDAl5nBzflg9nJxisQvBpALsJrgDehC4lraa1bMPDnc9U2ntORfRvLnHOAnpK_Xah6wBWr6Lc0DQ'}"}
+
+def query(payload):
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
 
 #Flask initialization
 app = flask.Flask(__name__, template_folder='templates')
@@ -240,17 +248,27 @@ def symptom_input():
                 if sim >= 0.5: # 유사도 0.5 이상이면 append
                     sim_symp.append(elem)
 
+            # # huggingface API 사용
+            # sim_symp = []
+            # similarity = query({
+            #         "inputs": {
+            #             "source_sentence": symptom,
+            #             "sentences": symp_list
+            #         },
+            #     })
+                
+            # print(similarity)
+            # i=0
+            # for elem in similarity: 
+            #     i += 1
+            #     if elem >= 0.5: 
+            #         sim_symp.append(symp_list[i])
+
             if sim_symp: 
                 return jsonify({'index': 'false', 'list': sim_symp})
                 
-            else: # 유사도 0.5 이상인 증상이 없을 때
+            if len(sim_symp) == 0: # 유사도 0.5 이상인 증상이 없을 때
                 response = "의사소통 데이터베이스에 입력하신 증상이 없습니다. 불편을 드려 죄송합니다. <br> 빠른 시일 내에 가까운 동물병원 방문을 추천드립니다."
-
-            # 영문 모델 load test
-            # query_embedding = sts.encode('How big is London')
-            # passage_embedding = sts.encode(['London has 9,787,426 inhabitants at the 2011 census',
-            #                       'London is known for its finacial district'])
-            # response = util.dot_score(query_embedding, passage_embedding)
 
             return response
 

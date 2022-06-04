@@ -11,17 +11,20 @@
     </style>
 </head>
 
-<body style="background-color: rgb(21, 62, 90);">
+<!--  -->
+<body style="background-color: rgb(21, 62, 90); ">
     <script src="https://cdn.jsdelivr.net/vue/latest/vue.min.js"></script>
     <script src="https://unpkg.com/botui/build/botui.js"></script>
 
-    <div class="title" style="font-family: 'Nanum Myeongjo', serif;margin-right:45%; margin-top:20%">
+    <div class="title" style="font-family: 'Nanum Myeongjo', serif;margin-left: 20%;margin-top:20%; width: fit-content;">
         <h1 style="color:aliceblue">AI Pet Doctor</h1>
         <h1 style="color:aliceblue">의사소통</h1>
     </div>
+
+    <img src="static/image-from-rawpixel-id-2839169-original.png" alt="phone image" style="width:600px; height:750px; z-index:2; margin-left:45%; margin-top: -400px;">
     
-    <div class="botui-app-container" id="reminder-bot" style="margin-top: -260px;margin-right:20%;">
-        <bot-ui></bot-ui>
+    <div class="botui-app-container" id="reminder-bot" style="margin-left: 52.8%; margin-top: -650px;z-index:1; width: 400px;">
+        <bot-ui style="z-index:1; position:absolute; width:350px; height:550px; margin-left:0.5%;"></bot-ui>
     </div>
 
 <script>
@@ -133,7 +136,7 @@
             }
         })
         
-        botui.message.bot({delay: 1000, content: '말티즈, 푸들, 포메라니안, 시추, 비숑프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스 훈트, 진돗개, 웰시코기, 시바견, 코커스패니얼, 믹스'})
+        botui.message.bot({delay: 1000, content: '말티즈, 푸들, 포메라니안, 시추, 비숑 프리제, 요크셔 테리어, 치와와, 스피츠, 골든 리트리버, 닥스 훈트, 진돗개, 웰시코기, 시바견, 코커스패니얼, 믹스'})
         botui.message.bot({delay: 1500, content: '종을 모르실 경우, "종 모름" 을 입력해주세요.'})
 
     }  // breedService end.
