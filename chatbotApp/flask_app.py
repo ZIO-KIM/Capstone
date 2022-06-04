@@ -59,7 +59,7 @@ symp_list = data['Symptoms'].unique().tolist()
 with open('data/지식인_증상_유사단어_dictionary_Pororo.json','r') as f:
     sample_symptoms_dict = json.load(f)
 # 필터링 데이터 load
-filter = pd.read_csv('data/필터링1차.csv', encoding = 'cp949')
+filter = pd.read_csv('data/필터링.csv', encoding = 'cp949')
 filter_list = filter['입력'].unique().tolist()
 
 # define 유사도 검사 model
