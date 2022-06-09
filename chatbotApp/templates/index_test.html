@@ -15,6 +15,27 @@
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @media only screen and (max-width: 600px) {
+        .hide-mobile 
+        {display:none;}
+       }
+       @media only screen and (max-width: 600px) {
+        .show-mobile 
+        {   
+            width: device-width; 
+            height: device-height;
+            display: flex;
+            justify-content: center;
+        }
+       }
+       @media only screen and (min-width: 601px) {
+        .show-mobile 
+        {   
+            position:relative; margin-left: 20.8%; z-index:1; width: 390px; margin-top: -650px; z-index: 1;
+        }
+       }
+    </style>
 </head>
 
 <!--  -->
@@ -22,14 +43,14 @@
     <script src="https://cdn.jsdelivr.net/vue/latest/vue.min.js"></script>
     <script src="https://unpkg.com/botui/build/botui.js"></script>
 
-    <div class="title" style="font-family: 'Jua', sans-serif; margin-left: 20%;margin-top:20%; width: fit-content;">
+    <div class="hide-mobile" style="font-family: 'Jua', sans-serif; margin-left: 20%;margin-top:20%; width: fit-content;">
         <h1 style="color:aliceblue; font-size: 50px; ">AI Pet Doctor</h1>
         <h1 style="color:aliceblue; font-size: 50px;">의사소통</h1>
     </div>
 
-    <div class="phonecontainer" style="position: absolute; width:600px; height:750px; z-index:2; margin-left:45%; margin-top: -430px;">
-        <img src="static/image-from-rawpixel-id-2839169-original.png" alt="phone image" style="width:600px; height:750px;">
-        <div class="botui-app-container" id="reminder-bot" style="position:relative; margin-left: 20.8%; z-index:1; width: 390px; margin-top: -650px; z-index: 1; ">
+    <div class="phone-container" style="position: absolute; width:600px; height:750px; z-index:2; margin-left:45%; margin-top: -430px;">
+        <img src="static/image-from-rawpixel-id-2839169-original.png" alt="phone image" class="hide-mobile" style="width:600px; height:750px;">
+        <div class="show-mobile" id="reminder-bot">
             <bot-ui style="width:350px; height:550px;"></bot-ui>
         </div>
     </div>
@@ -364,7 +385,13 @@
             }
             else { // 유사한 증상들 출력해주고 다시 한번 input 받아야 할 때
                 alert('입력하신 증상에 대한 유사도 검사 중입니다. 시간이 좀 걸릴 수 있으니 잠시만 기다려주세요 ...')
-                catch_symptom_name = function() {
+
+                if (response['index'] == 'empty_list') { // 유사도 리스트가 생성되지 않음
+                    botui.message.bot({delay: 500, content: response['list'],cssClass: 'custom'})
+                    botui.message.bot({delay: 1000, content: "의사소통 서비스를 종료합니다. 이용해 주셔서 감사합니다.",cssClass: 'custom'})
+                }
+                else {
+                    catch_symptom_name = function() {
                     botui.message.bot({delay: 500, content: '유사도 검사 결과, 의사소통 DB의 다음과 같은 증상이 입력하신 증상과 유사한 증상으로 확인되었습니다.',cssClass: 'custom'})
                     botui.message.bot({delay: 1000, content: response['list'],cssClass: 'custom'})
                     botui.message.bot({delay: 1500, content: '다음 중 원하는 증상을 선택하여 입력해 주세요.',cssClass: 'custom'})
@@ -443,6 +470,7 @@
                     
                 }
                 catch_symptom_name()
+                }
             }
         })
     }

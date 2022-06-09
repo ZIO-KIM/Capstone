@@ -78,6 +78,8 @@ def query(payload):
 #Flask initialization
 app = flask.Flask(__name__, template_folder='templates')
 
+# development server warning solve
+
 # # MongoDB
 # app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
 # mongo = PyMongo(app)
@@ -265,12 +267,11 @@ def symptom_input():
             #         sim_symp.append(symp_list[i])
 
             if len(sim_symp) == 0: # 유사도 0.5 이상인 증상이 없을 때
-                response = "의사소통 데이터베이스에 입력하신 증상이 없습니다. 불편을 드려 죄송합니다. <br> 빠른 시일 내에 가까운 동물병원 방문을 추천드립니다."
+                return jsonify({'index': 'empty_list', 'list': "의사소통 데이터베이스에 입력하신 증상과 유사한 증상이 없습니다. 불편을 드려 죄송합니다. 빠른 시일 내에 가까운 동물병원 방문을 추천드립니다."})
 
             if sim_symp: 
                 return jsonify({'index': 'false', 'list': sim_symp})
-                
-            return response
+
 
 @app.route("/ICD_specify", methods=['GET', 'POST'])
 def ICD_specify_print():
